@@ -17,6 +17,7 @@ class Booking(CommonModel):
     user = models.ForeignKey(
         "users.User",
         on_delete=models.CASCADE,
+        related_name="bookings",
     )
 
     room = models.ForeignKey(
@@ -26,6 +27,7 @@ class Booking(CommonModel):
         on_delete=models.SET_NULL,
         # booking 이 삭제되더라도 어떤 Room을 booking 했는지 database 에 남기기 위해
         # SET_NULL 사용함
+        related_name="bookings",
     )
 
     experience = models.ForeignKey(
@@ -35,6 +37,7 @@ class Booking(CommonModel):
         on_delete=models.SET_NULL,
         # booking 이 삭제되더라도 어떤 Experience를 booking 했는지 database 에 남기기 위해
         # SET_NULL 사용함
+        related_name="bookings",
     )
 
     check_in = models.DateField(

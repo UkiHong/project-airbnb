@@ -12,12 +12,14 @@ class Photo(CommonModel):
         on_delete=models.CASCADE,
         null=True,
         blank=True,
+        related_name="photos",
     )
     experience = models.ForeignKey(
         "experiences.Experience",
         on_delete=models.CASCADE,
         null=True,
         blank=True,
+        related_name="photos",
     )
 
     def __str__(self) -> str:
@@ -32,6 +34,7 @@ class Video(CommonModel):
         # ex. 유저의 unique한 결제 정보를 하나만 만들어야 할 때 사용 가능
         "experiences.Experience",
         on_delete=models.CASCADE,
+        related_name="videos",
     )
 
     def __str__(self) -> str:

@@ -13,11 +13,16 @@ def categories(request):
         serializer = CategorySerializer(all_categories, many=True)
         return Response(serializer.data)
         # serializer 는 django python 객체를 JSON으로 번역
+        # serializer 는 반대로 유저가 보낸 데이터를 django 객체로도 바꿔줌
     elif request.method == "POST":
-        print(request.data)
-        # request 는 URL에서 호출된 모든 함수에게 주어짐 또 request 객체에는 api view
-        # 이기 때문에 data 라는게 있음. data는 유저가 보내는 데이터
-        return Response({"created": True})
+        # print(request.data)
+        # # request 는 URL에서 호출된 모든 함수에게 주어짐 또 request 객체에는 api view
+        # # 이기 때문에 data 라는게 있음. data는 유저가 보내는 데이터
+        serializer = CategorySerializer(data=request.data)
+        if serializer.is_valid():
+            return Response({"created": True})
+        else:
+            return Response(serializer.errors)
 
 
 @api_view()

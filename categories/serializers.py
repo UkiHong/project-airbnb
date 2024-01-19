@@ -2,7 +2,7 @@ from rest_framework import serializers
 
 
 class CategorySerializer(serializers.Serializer):
-    pk = serializers.IntegerField()
+    pk = serializers.IntegerField(read_only=True)
     name = serializers.CharField(
         required=True,
         max_length=50,
@@ -10,4 +10,5 @@ class CategorySerializer(serializers.Serializer):
     kind = serializers.CharField(
         max_length=15,
     )
-    created_at = serializers.DateTimeField()
+    created_at = serializers.DateTimeField(read_only=True)
+    # read_only=True 를 사용함으로써 유저가 해당 데이터를 보내지않아도(not required) POST할 수 있음

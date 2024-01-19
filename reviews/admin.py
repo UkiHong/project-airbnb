@@ -24,6 +24,7 @@ class WordFilter(admin.SimpleListFilter):
             reviews
 
 
+# Filter by ratings
 class ScoreFilter(admin.SimpleListFilter):
     title = "Filter by Score"
     parameter_name = "score"

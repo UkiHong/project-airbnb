@@ -88,8 +88,15 @@ class Rooms(APIView):
                         # https://docs.djangoproject.com/en/4.1/topics/db/transactions/
                         room = serializer.save(
                             owner=request.user,
+                            # owner는 이 url을 호출한 유저라는 뜻
                             category=category,
                         )
+                        # 유저 데이터로만 serializer를 생성해서 save 메서드를 호출하면,
+                        # 자동으로 serializer의 create 메서드 호출됨
+                        # .save() 괄호 안에 추가하는 무엇이든 create 메서드의 validated_data에 추가됨
+                        # 즉, request.data에 괄호 안의 데이터를 포함한 모든 validated_data를 가지고 방을 생성해 줌
+                        # owner와 category는 Foreign Key임에 반해, amenities는 ManyToMany 필드임에 유의
+                        # 따라서, 방이 생성된 다음 room.amenities.add()를 사용하여 amenity를 추가해줘야 함
                         amenities = request.data.get("amenities")
                         for amenity_pk in amenities:
                             amenity = Amenity.objects.get(pk=amenity_pk)
@@ -116,11 +123,52 @@ class RoomDetail(APIView):
         serializer = RoomDetailSerializer(room)
         return Response(serializer.data)
 
+    def put(self, request, pk):
+        room = self.get_object(pk)
+        if not request.user.is_authenticated:
+            raise NotAuthenticated
+        if room.owner != request.user:
+            raise PermissionDenied
+        serializer = RoomDetailSerializer(
+            room,
+            data=request.data,
+            partial=True,
+        )
+        if serializer.is_valid():
+            category_pk = request.data.get("category")
+            if category_pk:
+                try:
+                    category = Category.objects.get(pk=category_pk)
+                    if category.kind == Category.CategoryKindChoices.EXPERIENCES:
+                        raise ParseError("Category kind should be 'rooms'")
+                except Category.DoesNotExist:
+                    raise ParseError("Category not found.")
+            try:
+                with transaction.atomic():
+                    room = serializer.save(
+                        owner=request.user,
+                        category=category,
+                    )
+                    amenities = request.data.get("amenities")
+                    if amenities:
+                        room.amenities.clear()
+                        for amenity_pk in amenities:
+                            amenity = Amenity.objects.get(pk=amenity_pk)
+                            room.amenities.add(amenity)
+                        serializer = RoomDetailSerializer(room)
+                        return Response(serializer.data)
+            except Exception:
+                raise ParseError("Amenity not found")
+        else:
+            return Response(serializer.errors)
+
     def delete(self, request, pk):
         room = self.get_object(pk)
         if not request.user.is_authenticated:
             raise NotAuthenticated
         if room.owner != request.user:
             raise PermissionDenied
+        # 위에 elif를 사용하지 않는 이유는, elif를 사용할 경우 위의 if절이 해당되면
+        # elif절은 작동하지 않을 것이기 때문. 위 아래 모두 작동하기 원하기 때문에 if를 사용
         room.delete()
         return Response(status=HTTP_204_NO_CONTENT)

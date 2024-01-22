@@ -6,7 +6,10 @@ class CategorySerializer(serializers.ModelSerializer):
     # create과 update method 도 자동으로 구현됨
     class Meta:
         model = Category
-        fields = "__all__"
+        fields = (
+            "name",
+            "kind",
+        )
 
 
 # 위 ModelSerializer로 아래 코드 전부를 위 코드로 구현가능.

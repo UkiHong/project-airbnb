@@ -1,0 +1,14 @@
+
+{
+    "name": "HOUSE AAA",
+    "country": "United Kingdom",
+    "city": "London",
+    "price": 1000,
+    "rooms": 1,
+    "toilets": 1,
+    "category": {"name": "hhhh", "kind":"kinddddd",}
+    "description": "AAAAAAAAAAAAAA",
+    "address": "London, UK",
+    "pet_friendly": true,
+    "kind": "entire_room"
+}

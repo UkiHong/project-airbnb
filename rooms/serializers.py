@@ -14,10 +14,10 @@ class AmenitySerializer(ModelSerializer):
 
 
 class RoomDetailSerializer(ModelSerializer):
-    owner = TinyUserSerializer()
-    amenities = AmenitySerializer(many=True)
+    owner = TinyUserSerializer(read_only=True)
+    amenities = AmenitySerializer(read_only=True, many=True)
     # amenities 여러 value가 있기 때문에(array 혹은 list 이기 때문에) many=True 를 써줘야함
-    category = CategorySerializer()
+    category = CategorySerializer(read_only=True)
     # category는 array가 아닌 단 한개의 value 이므로 many=True 안씀
 
     class Meta:
